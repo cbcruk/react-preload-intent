@@ -14,6 +14,8 @@ Requires React 19+ (`react-dom/preload` 사용).
 
 ## Demo
 
+[**cbcruk.github.io/react-preload-intent**](https://cbcruk.github.io/react-preload-intent/) — 또는 로컬에서:
+
 ```sh
 pnpm install
 pnpm demo
