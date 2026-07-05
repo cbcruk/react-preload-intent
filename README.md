@@ -12,6 +12,18 @@ pnpm add react-preload-intent
 
 Requires React 19+ (`react-dom/preload` 사용).
 
+## Demo
+
+```sh
+pnpm install
+pnpm demo
+```
+
+4가지 트리거를 인터랙티브하게 발동시켜 볼 수 있는 데모. 우하단 **`<head>` preload
+monitor** 패널이 `ReactDOM.preload()`로 주입되는 `<link rel="preload">`를 실시간으로
+보여주고, 각 섹션 배지가 해당 이미지의 preload 시점(ms)을 표시 — DevTools 없이 결과물을
+바로 확인할 수 있습니다. (`examples/`)
+
 ## Triggers
 
 | Trigger      | Hook                      | When                       |
