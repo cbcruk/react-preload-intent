@@ -32,6 +32,7 @@
     "build": "vp pack",
     "dev": "vp pack --watch",
     "demo": "vp dev --open",
+    "build:demo": "vp build --base /react-preload-intent/ --outDir dist-demo",
     "test": "vp test",
     "check": "vp check",
     "format": "vp fmt",
