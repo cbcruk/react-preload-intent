@@ -20,9 +20,6 @@ export default defineConfig({
   },
   fmt: {
     printWidth: 80,
-    jsdoc: {
-      capitalizeDescriptions: false,
-    },
     sortImports: {},
     singleQuote: true,
     semi: false,

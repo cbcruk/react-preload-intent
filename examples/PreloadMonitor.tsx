@@ -15,14 +15,14 @@ import {
 } from 'react'
 
 export interface PreloadEntry {
-  /** dedup 키 겸 React key — href + imageSrcSet 조합이라 항목당 유일 */
+  /** dedup 키 겸 React key — `href` + `imageSrcSet` 조합이라 항목당 유일. */
   key: string
   href: string
   as: string | null
   fetchPriority: string | null
   imageSrcSet: string | null
   imageSizes: string | null
-  /** 페이지 네비게이션 시작 이후 경과 ms */
+  /** 페이지 네비게이션 시작 이후 경과 ms. */
   at: number
 }
 
@@ -65,7 +65,7 @@ export function PreloadMonitorProvider({
   children: React.ReactNode
 }): React.ReactNode {
   const [entries, setEntries] = useState<PreloadEntry[]>([])
-  // ref로 유지해야 StrictMode의 effect 재실행 시 이미 본 link를 다시 추가하지 않음
+  /** ref로 유지해야 StrictMode의 effect 재실행 시 이미 본 link를 다시 추가하지 않음. */
   const seenRef = useRef<Set<string>>(new Set())
 
   useEffect(() => {
@@ -78,7 +78,6 @@ export function PreloadMonitorProvider({
       setEntries((prev) => [entry, ...prev])
     }
 
-    // 이미 head에 들어와 있는 preload link (render 트리거 등)
     for (const link of document.head.querySelectorAll<HTMLLinkElement>(
       'link[rel="preload"][as="image"]',
     )) {
@@ -121,7 +120,7 @@ function usePreloadLog(): PreloadLog {
 /**
  * 특정 URL이 preload 됐는지 + 언제(ms) 됐는지. 섹션별 라이브 배지에 사용.
  *
- * imageSrcSet 기반 preload는 href 없이 imagesrcset만 주입되므로 srcset 문자열도 함께 매칭.
+ * `imageSrcSet` 기반 preload는 `href` 없이 `imagesrcset`만 주입되므로 srcset 문자열도 함께 매칭.
  */
 export function useHasPreloaded(url: string): PreloadEntry | undefined {
   const { entries } = usePreloadLog()
@@ -140,7 +139,7 @@ function fmtUrl(url: string): string {
   }
 }
 
-/** imageSrcSet 문자열에서 가장 큰(마지막) candidate URL만 뽑아 표시용으로 축약. */
+/** `imageSrcSet` 문자열에서 가장 큰(마지막) candidate URL만 뽑아 표시용으로 축약. */
 function displayLabel(entry: PreloadEntry): string {
   if (!entry.imageSrcSet) return fmtUrl(entry.href)
   const candidates = entry.imageSrcSet.split(',')

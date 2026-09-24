@@ -21,9 +21,9 @@ const THUMB = 'https://picsum.photos/seed/thumb/240/240'
 const FULL_VIEWPORT = 'https://picsum.photos/seed/viewport/1600/900'
 const FULL_COND = 'https://picsum.photos/seed/conditional/1600/900'
 
-// 아래 두 예시(ProductPage / ResponsiveHero)는 examples.tsx 안에서 URL을 하드코딩한다.
-// 데모에서 배지가 매칭할 수 있도록 그 값을 그대로 참조.
+/** `examples.tsx`의 `ProductPage`가 하드코딩한 URL. 배지가 매칭할 수 있도록 같은 값을 참조. */
 const PRODUCT_HERO = '/api/products/demo/hero.jpg'
+/** `examples.tsx`의 `ResponsiveHero`가 하드코딩한 URL. 배지가 매칭할 수 있도록 같은 값을 참조. */
 const RESPONSIVE_HERO = '/hero-large.jpg'
 
 const freshImageUrl = (): string =>
