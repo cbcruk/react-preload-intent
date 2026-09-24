@@ -82,6 +82,35 @@ function ArticleCard({ href, heroUrl }) {
 
 TanStack Router와 동일하게 50ms 지연이 디폴트(실수 hover 필터). 마우스가 떠나면 취소.
 
+### Intent + `<ViewTransition>`
+
+React는 `<ViewTransition>` 안에서 transition으로 새 `<img>`를 렌더할 때 [이미지 로드/디코드를 기다린 뒤](https://react.dev/reference/react-dom/components/img#waiting-for-an-image-during-a-view-transition) 애니메이션을 시작합니다(React 19.3+). hover 시점에 미리 받아 두면 클릭 후 대기가 거의 사라집니다:
+
+```tsx
+import { startTransition, useState, ViewTransition } from 'react'
+import { usePreloadIntent } from 'react-preload-intent'
+
+function Reveal({ imageUrl }) {
+  const [shown, setShown] = useState(false)
+  const intent = usePreloadIntent(imageUrl)
+  return (
+    <>
+      <button {...intent} onClick={() => startTransition(() => setShown(true))}>
+        Show
+      </button>
+      {shown && (
+        <ViewTransition>
+          <img src={imageUrl} alt="" />
+        </ViewTransition>
+      )}
+    </>
+  )
+}
+```
+
+- 이미지가 느리면 React는 타임아웃 후 기다리지 않고 진행합니다. 미리 받아 두면 이미지 없이 전환되는 경우도 줄어듭니다.
+- `<img>`에 `onLoad`를 넘기거나 `loading="lazy"`를 쓰면 React가 기다리지 않습니다.
+
 ### Viewport — IntersectionObserver
 
 ```tsx

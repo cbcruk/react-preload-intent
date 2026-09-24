@@ -4,7 +4,12 @@
  * Suspense + streaming 안티패턴은 CLAUDE.md / README의 "Suspense + streaming 함정" 참조.
  */
 
-import { useState } from 'react'
+import {
+  startTransition,
+  useLayoutEffect,
+  useState,
+  ViewTransition,
+} from 'react'
 
 import {
   Preload,
@@ -136,5 +141,61 @@ export function ResponsiveHero() {
         alt=""
       />
     </>
+  )
+}
+
+/**
+ * 응용 — intent preload + `<ViewTransition>`. React는 transition 중 새 `<img>`의
+ * 로드/디코드를 기다렸다가 애니메이션을 시작하므로, hover 시점에 미리 받아 두면 클릭 후 대기가 거의 사라짐.
+ *
+ * `preloadOnIntent={false}`면 비교용 baseline. `onReveal`은 데모에서 클릭 → 커밋 시간을 재기 위한
+ * 훅.
+ */
+export function ViewTransitionReveal({
+  imageUrl,
+  preloadOnIntent = true,
+  onReveal,
+}: {
+  imageUrl: string
+  preloadOnIntent?: boolean
+  onReveal?: () => void
+}) {
+  const [shown, setShown] = useState(false)
+  const intent = usePreloadIntent(preloadOnIntent ? imageUrl : null)
+
+  return (
+    <>
+      <button
+        {...intent}
+        onClick={() => startTransition(() => setShown(true))}
+        disabled={shown}
+      >
+        이미지 보기
+      </button>
+      {shown && (
+        <ViewTransition>
+          <RevealedImage src={imageUrl} onReveal={onReveal} />
+        </ViewTransition>
+      )}
+    </>
+  )
+}
+
+function RevealedImage({
+  src,
+  onReveal,
+}: {
+  src: string
+  onReveal?: () => void
+}) {
+  useLayoutEffect(() => onReveal?.(), [onReveal])
+  return (
+    <img
+      src={src}
+      alt=""
+      width={320}
+      height={160}
+      style={{ display: 'block', marginTop: 12, borderRadius: 8 }}
+    />
   )
 }
