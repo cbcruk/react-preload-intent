@@ -4,8 +4,9 @@
  * React 19's react-dom/preload() with trigger taxonomy borrowed from TanStack
  * Router (intent / viewport / render).
  *
- * What Next.js's <Image priority> does internally — but as standalone,
- * composable hooks.
+ * Preloads images that are not rendered yet, at the moment a trigger fires.
+ * Rendered <img> elements already get an automatic preload hint from React
+ * during SSR.
  */
 
 import { type RefObject, useCallback, useEffect, useRef } from 'react'

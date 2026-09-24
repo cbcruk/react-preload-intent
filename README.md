@@ -2,7 +2,23 @@
 
 > React 19의 `react-dom/preload()`를 트리거 단위로 노출하는 hooks.
 
-Next.js의 `<Image priority>`가 내부적으로 하는 일 — 적절한 시점에 `ReactDOM.preload()`를 호출해서 `<link rel="preload">`를 head에 넣는 것 — 을 standalone hooks로 분리. 트리거 명명은 [TanStack Router](https://tanstack.com/router/v1/docs/framework/react/guide/preloading)에서 차용.
+**아직 렌더되지 않은 이미지**를 hover, viewport 진입, 이벤트 같은 트리거 시점에 미리 받아 둡니다. 다음 화면에 쓸 이미지가 필요해지기 전에 캐시에 올려 두는 용도입니다. 트리거 명명은 [TanStack Router](https://tanstack.com/router/v1/docs/framework/react/guide/preloading)에서 차용.
+
+## React가 이미 해주는 것
+
+SSR에서 React는 렌더되는 `<img>`에 대해 [preload hint를 자동 생성](https://react.dev/reference/react-dom/components/img#controlling-image-preloading-during-server-rendering)합니다. 이미 렌더하는 `<img>`에 `usePreload`를 덧붙일 필요는 없습니다.
+
+```tsx
+// SSR: React가 <link rel="preload" as="image" href="/hero.jpg">를 자동 생성
+<img src="/hero.jpg" alt="" />
+```
+
+이 라이브러리가 필요한 경우:
+
+- **아직 렌더되지 않은 이미지**: 다음 화면, 모달, hover 대상 → intent / viewport / manual 트리거
+- **React가 자동 preload하지 않는 `<img>`**: `<picture>` / `<noscript>` 안의 이미지 → [Modern formats](#modern-formats-picture) 참조
+- **CSR 전용 앱**: 자동 hint는 서버 렌더링에서만 생성됨
+- **`loading="lazy"` / `fetchPriority="low"`인데 특정 시점에는 받아 두고 싶은 이미지**: 이 두 속성이 붙으면 React가 hint를 생성하지 않음
 
 ## Install
 
