@@ -75,6 +75,15 @@ describe('usePreloadCallback (manual trigger)', () => {
     expect(opts.crossOrigin).toBe('anonymous')
     expect(opts.referrerPolicy).toBe('no-referrer')
   })
+
+  test('skips data: URLs regardless of scheme case', () => {
+    const { result } = renderHook(() => usePreloadCallback())
+    act(() => {
+      result.current('data:image/png;base64,iVBORw0KGgo=')
+      result.current('DATA:image/gif;base64,R0lGODlh')
+    })
+    expect(preloadSpy).not.toHaveBeenCalled()
+  })
 })
 
 describe('usePreload / <Preload> (render trigger)', () => {
@@ -103,6 +112,11 @@ describe('usePreload / <Preload> (render trigger)', () => {
   test('usePreload skips when url is nullish', () => {
     renderHook(() => usePreload(null))
     renderHook(() => usePreload(undefined))
+    expect(preloadSpy).not.toHaveBeenCalled()
+  })
+
+  test('usePreload skips data: URLs', () => {
+    renderHook(() => usePreload('data:image/png;base64,iVBORw0KGgo='))
     expect(preloadSpy).not.toHaveBeenCalled()
   })
 
