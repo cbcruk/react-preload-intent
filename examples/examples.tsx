@@ -1,7 +1,7 @@
 /**
  * 4가지 trigger 사용 예시 및 응용 패턴.
  *
- * Suspense + streaming 안티패턴은 CLAUDE.md / README의 "Suspense + streaming 함정" 참조.
+ * Suspense + streaming 안티패턴은 README "Suspense + streaming 함정" 참조.
  */
 
 import {
