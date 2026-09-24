@@ -170,6 +170,22 @@ React는 `<picture>` 안의 `<img>`를 자동 preload하지 않습니다. `type`
 
 AVIF 미지원 브라우저는 preload를 무시하고 `<img>`의 JPEG를 받습니다. 이 경우 fallback인 JPEG는 preload 효과를 보지 못합니다.
 
+## ⚠️ preload 옵션을 `<img>`와 맞추기
+
+preload한 응답은 실제 `<img>` 요청과 조건이 맞아야 재사용됩니다. 어긋나면 preload는 낭비되고 이미지를 한 번 더 받습니다.
+
+- **`crossOrigin`**: `<img crossOrigin="anonymous">`라면 preload에도 같은 값을 넘기세요. CORS 모드가 다르면 브라우저가 preload 응답을 쓰지 않습니다.
+- **`imageSrcSet` / `imageSizes`**: `<img>`의 `srcSet` / `sizes`와 같은 값이어야 합니다. 다르면 브라우저가 다른 후보를 골라 preload한 파일을 쓰지 않을 수 있습니다.
+
+```tsx
+<Preload href="/hero.jpg" crossOrigin="anonymous" />
+<img src="/hero.jpg" crossOrigin="anonymous" alt="" />
+```
+
+### 중복 호출
+
+React는 `href`가 같은 preload를 한 번만 처리합니다. 이미지는 `href`, `imageSrcSet`, `imageSizes`가 모두 같아야 같은 호출로 봅니다([`preload()` 문서](https://react.dev/reference/react-dom/preload#caveats)). 그래서 `fetchPriority` 같은 다른 옵션만 바꿔 다시 호출하면 **첫 호출의 옵션이 유지**되고 나중 호출은 무시됩니다. 옵션은 처음 호출할 때 정하세요.
+
 ## ⚠️ Suspense + streaming 함정
 
 Suspense boundary **안에서** `await` 후 `<Preload>` / `usePreload`를 호출하면, 생성된 `<link>`가 HTML stream 끝에 붙어 무의미해집니다. boundary **밖, await 이전**에 호출하세요.
