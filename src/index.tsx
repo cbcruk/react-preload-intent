@@ -20,6 +20,11 @@ export interface PreloadOptions {
   imageSrcSet?: string
   /** imageSrcSet과 함께 사용 */
   imageSizes?: string
+  /**
+   * 리소스 MIME 타입 (예: `"image/avif"`). 브라우저가 지원하지 않는 타입이면 다운로드를 건너뛰므로
+   * `<picture>`의 `<source type>`과 맞춰 쓸 때 유용.
+   */
+  type?: string
   referrerPolicy?:
     | 'no-referrer'
     | 'no-referrer-when-downgrade'
@@ -43,6 +48,7 @@ function callPreload(url: string, options: PreloadOptions = {}): void {
     crossOrigin: options.crossOrigin,
     imageSrcSet: options.imageSrcSet,
     imageSizes: options.imageSizes,
+    type: options.type,
     referrerPolicy: options.referrerPolicy,
   })
 }

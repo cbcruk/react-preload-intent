@@ -317,4 +317,10 @@ describe('native preload options forwarded to react-dom', () => {
     expect(opts.crossOrigin).toBe('anonymous')
     expect(opts.referrerPolicy).toBe('no-referrer')
   })
+
+  test('type reaches preload() so browsers can skip unsupported formats', () => {
+    render(<Preload href="/hero.avif" type="image/avif" />)
+    const [, opts] = preloadSpy.mock.calls[0]!
+    expect(opts.type).toBe('image/avif')
+  })
 })

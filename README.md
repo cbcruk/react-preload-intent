@@ -110,6 +110,21 @@ function CommentBox() {
 />
 ```
 
+### Modern formats (`<picture>`)
+
+React는 `<picture>` 안의 `<img>`를 자동 preload하지 않습니다. `type`을 지정하면 브라우저가 지원하지 않는 포맷의 다운로드를 건너뜁니다:
+
+```tsx
+<Preload href="/hero.avif" type="image/avif" />
+
+<picture>
+  <source srcSet="/hero.avif" type="image/avif" />
+  <img src="/hero.jpg" alt="" />
+</picture>
+```
+
+AVIF 미지원 브라우저는 preload를 무시하고 `<img>`의 JPEG를 받습니다. 이 경우 fallback인 JPEG는 preload 효과를 보지 못합니다.
+
 ## ⚠️ Suspense + streaming 함정
 
 Suspense boundary **안에서** `await` 후 `<Preload>` / `usePreload`를 호출하면, 생성된 `<link>`가 HTML stream 끝에 붙어 무의미해집니다. boundary **밖, await 이전**에 호출하세요.
