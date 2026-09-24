@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'
+import { StrictMode, useCallback, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 
 import {
@@ -8,6 +8,7 @@ import {
   ProductPage,
   ProductThumbnail,
   ResponsiveHero,
+  ViewTransitionReveal,
 } from './examples'
 import {
   PreloadMonitorPanel,
@@ -24,6 +25,9 @@ const FULL_COND = 'https://picsum.photos/seed/conditional/1600/900'
 // 데모에서 배지가 매칭할 수 있도록 그 값을 그대로 참조.
 const PRODUCT_HERO = '/api/products/demo/hero.jpg'
 const RESPONSIVE_HERO = '/hero-large.jpg'
+
+const freshImageUrl = (): string =>
+  `https://picsum.photos/seed/vt-${Math.random().toString(36).slice(2)}/640/320`
 
 const fakeUpload = async (file: File): Promise<string> =>
   URL.createObjectURL(file)
@@ -109,6 +113,78 @@ function Section({
         {children}
       </div>
     </section>
+  )
+}
+
+/** 클릭 → 커밋(이미지 대기 포함)까지 걸린 시간을 표시하는 한 칸. `onClickCapture`로 클릭 시각을 잡음. */
+function RevealTimer({
+  label,
+  preloadOnIntent,
+  imageUrl,
+}: {
+  label: string
+  preloadOnIntent: boolean
+  imageUrl: string
+}): React.ReactNode {
+  const clickedAt = useRef<number | null>(null)
+  const [elapsed, setElapsed] = useState<number | null>(null)
+
+  const handleReveal = useCallback(() => {
+    if (clickedAt.current === null) return
+    setElapsed(Math.round(performance.now() - clickedAt.current))
+    clickedAt.current = null
+  }, [])
+
+  return (
+    <div
+      style={{ flex: '1 1 280px', minWidth: 0 }}
+      onClickCapture={() => {
+        clickedAt.current ??= performance.now()
+      }}
+    >
+      <p style={{ margin: '0 0 8px', fontSize: 13, fontWeight: 600 }}>
+        {label}
+        <span style={{ marginLeft: 8, fontWeight: 400, color: '#64748b' }}>
+          {elapsed === null ? '' : `클릭 → 표시 ${elapsed}ms`}
+        </span>
+      </p>
+      <ViewTransitionReveal
+        imageUrl={imageUrl}
+        preloadOnIntent={preloadOnIntent}
+        onReveal={handleReveal}
+      />
+    </div>
+  )
+}
+
+function ViewTransitionDemo(): React.ReactNode {
+  const [round, setRound] = useState(0)
+  const [urls, setUrls] = useState(() => [freshImageUrl(), freshImageUrl()])
+
+  return (
+    <>
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }} key={round}>
+        <RevealTimer
+          label="preload 없음"
+          preloadOnIntent={false}
+          imageUrl={urls[0]!}
+        />
+        <RevealTimer
+          label="intent preload"
+          preloadOnIntent
+          imageUrl={urls[1]!}
+        />
+      </div>
+      <button
+        style={{ marginTop: 12, fontSize: 12 }}
+        onClick={() => {
+          setUrls([freshImageUrl(), freshImageUrl()])
+          setRound((r) => r + 1)
+        }}
+      >
+        새 이미지로 다시
+      </button>
+    </>
   )
 }
 
@@ -200,6 +276,13 @@ function App(): React.ReactNode {
         </p>
       </Section>
 
+      <Section
+        title="6. 응용 — Intent + <ViewTransition>"
+        hint="React는 transition 중 새 <img>의 로드/디코드를 기다린 뒤 애니메이션을 시작함. 오른쪽 버튼은 hover(50ms+) 시점에 preload되므로, 잠깐 올려 뒀다가 클릭하면 대기가 거의 없음. 왼쪽과 비교해 보세요."
+      >
+        <ViewTransitionDemo />
+      </Section>
+
       <div
         style={{
           height: '90vh',
@@ -216,7 +299,7 @@ function App(): React.ReactNode {
       </div>
 
       <Section
-        title="6. Viewport — <GalleryItem>"
+        title="7. Viewport — <GalleryItem>"
         hint="이 섹션이 viewport 200px 이내로 진입하면 풀 사이즈를 미리 preload. 스크롤로 다가오는 순간 monitor에 항목이 추가됨."
         watchUrl={FULL_VIEWPORT}
       >
