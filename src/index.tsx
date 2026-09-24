@@ -31,8 +31,12 @@ export interface PreloadOptions {
 /**
  * `fetchPriority` 디폴트를 `"high"`로 보정. JS로 주입되는 `<link rel="preload">`의 브라우저 기본값이
  * `"low"`라 명시 필요.
+ *
+ * `data:` URL은 이미 인라인된 리소스라 fetch할 게 없으므로 스킵 — React도 `<img>` 자동 preload에서 동일하게
+ * 제외함.
  */
 function callPreload(url: string, options: PreloadOptions = {}): void {
+  if (/^data:/i.test(url)) return
   reactDomPreload(url, {
     as: 'image',
     fetchPriority: options.fetchPriority ?? 'high',
